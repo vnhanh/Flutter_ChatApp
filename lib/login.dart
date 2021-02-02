@@ -1,5 +1,6 @@
-import 'package:flutter/cupertino.dart';
+// import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'chat.dart';
 
 class LoginPage extends StatefulWidget {
   final String title;
@@ -15,6 +16,7 @@ class _LoginPage extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context){
+
     return Scaffold(
       appBar: AppBar(
         title: Text("LOGIN"),
@@ -36,7 +38,6 @@ class _LoginPage extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("username:"),
             TextFormField(
               validator: (value){
                 if(value.isEmpty){
@@ -45,24 +46,29 @@ class _LoginPage extends State<LoginPage> {
                 return null;
               },
               decoration: InputDecoration(
-                  hintText: "Enter username here...",
-                  contentPadding: EdgeInsets.only(top: 16)
+                hintText: "Enter username here...",
+                contentPadding: EdgeInsets.only(top: 16),
+                prefixIcon: IconButton(
+                  icon: Icon(Icons.account_box)
+                ),
               ),
             ),
-            Container(
-              margin: EdgeInsets.only(top: 16),
-              child: Text("password:"),
-            ),
             TextFormField(
+              obscureText: true,
               validator: (value) {
                 if(value.isEmpty){
-                  return "Please enter email...";
+                  return "Please enter password...";
+                }else if(value.length < 5){
+                  return "Password must be at least 5 characters";
                 }
                 return null;
               },
               decoration: InputDecoration(
-                  hintText: "Enter email here...",
-                  contentPadding: EdgeInsets.only(top: 16)
+                hintText: "Enter password here...",
+                contentPadding: EdgeInsets.only(top: 16),
+                prefixIcon: IconButton(
+                  icon: Icon(Icons.lock),
+                ),
               ),
             ),
             createSubmitButton(context)
@@ -81,9 +87,11 @@ class _LoginPage extends State<LoginPage> {
           child: ElevatedButton(
             onPressed: (){
               if(_formKey.currentState.validate()){
-                Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text("Valid validator...")
-                ));
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => ChatPage()),
+                // );
+                _processLogin(context);
               }else{
                 Scaffold.of(context).showSnackBar(SnackBar(
                     content: Text("Invalid validator...")
@@ -96,5 +104,34 @@ class _LoginPage extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  void _processLogin(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext _context){
+        return Dialog(
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                Padding(
+                  padding: EdgeInsets.only(left: 16),
+                  child: Text("Loading..."),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+    );
+
+    Future.delayed(Duration(seconds: 3), () {
+      Navigator.pop(context);
+      Navigator.pushNamed(context, "/chat");
+    });
   }
 }
